@@ -56,13 +56,12 @@ var saveTasks = function() {
 
 
 
-//create event delegation to dynamic p elements whose parent has a class of .list-group
+//create event delegation to dynamic p elements whose parent have a class of .list-group
 $(".list-group").on("click", "p", function() {
   //capture the <p> element's text in var text
   var text = $(this)
   .text()
   .trim();
-  console.log(text);
   //create and capture a textarea with a class of .form-control and assign it's value to be the previously captured text
   var textInput = $("<textarea>")
     .addClass("form-control")
@@ -77,13 +76,13 @@ $(".list-group").on("click", "p", function() {
 
 
 
-//create a function that describes what happens when the  <textarea> whose parent has  a class of .list-group  is out of focus
+//create a function to assign what happens when the <textarea> whose parent has  a class of .list-group  is out of focus
 $(".list-group").on("blur", "textarea", function() {
   //capture the textares's current value/text
   var text = $(this)
   .val()
   .trim();
-  //capture the parent ul's id attribute
+  //capture the parent ul's id attribute and edit it to get the current status
   var status = $(this) 
   .closest(".list-group")
   .attr("id")
@@ -104,8 +103,59 @@ $(".list-group").on("blur", "textarea", function() {
     .text(text);
 
   //replace textarea with a p element
-  $(this).repalceWith(taskP);
+  $(this).replaceWith(taskP);
 })
+
+
+
+
+//create event listener/delegation on dynamic spans whose parent has a class of .list-group
+//due date was clicked
+$(".list-group").on("click", "span", function() {
+  //capture current text
+  var date = $(this)
+  .text()
+  .trim();
+  //create new input element
+  var dateInput = $("<input>")
+  .attr("type", "text")
+  .addClass("form-control")
+  .val(date);
+  //swap out elements
+  $(this).replaceWith(dateInput);
+  //automatically focus on new element
+  dateInput.trigger("focus");
+});
+
+
+
+
+//event listener that converts the input back to span when the user clicks outside of the input area
+//value of the date was changed
+$(".list-group").on("blur", "input[type='text']", function() {
+  //get current text
+  var date = $(this)
+  .val()
+  .trim()
+  //get the parent ul"s id attribute
+  var status = $(this)
+    .closest(".list-group")
+    .attr("id")
+    .replace("list-", "");
+    //get the task's position in the list of otyher li elements
+    var index = $(this)
+    .closest(".list-group-item")
+    .index();
+    //update task in array and re-save to local storage
+    tasks[status][index].date = date;
+    saveTasks();
+    //recreate span element with bootstrap classes
+    var taskSpan = $("<span>")
+    .addClass("badge badge-primary badge-pill")
+    .text(date);
+    //replace input with span element
+    $(this).replaceWith(taskSpan);
+});
 
 
 
