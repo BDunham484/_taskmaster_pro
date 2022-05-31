@@ -18,6 +18,10 @@ var createTask = function(taskText, taskDate, taskList) {
   $("#list-" + taskList).append(taskLi);
 };
 
+
+
+
+
 var loadTasks = function() {
   tasks = JSON.parse(localStorage.getItem("tasks"));
 
@@ -41,9 +45,68 @@ var loadTasks = function() {
   });
 };
 
+
+
+
+
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+
+
+
+
+//create event delegation to dynamic p elements whose parent has a class of .list-group
+$(".list-group").on("click", "p", function() {
+  //capture the <p> element's text in var text
+  var text = $(this)
+  .text()
+  .trim();
+  console.log(text);
+  //create and capture a textarea with a class of .form-control and assign it's value to be the previously captured text
+  var textInput = $("<textarea>")
+    .addClass("form-control")
+    .val(text);
+  //replace the <p> elemnet with the new <textarea>
+  $(this).replaceWith(textInput);
+  //automatically highlight the <textarea> for editing
+  textInput.trigger("focus");
+});
+
+
+
+
+
+//create a function that describes what happens when the  <textarea> whose parent has  a class of .list-group  is out of focus
+$(".list-group").on("blur", "textarea", function() {
+  //capture the textares's current value/text
+  var text = $(this)
+  .val()
+  .trim();
+  //capture the parent ul's id attribute
+  var status = $(this) 
+  .closest(".list-group")
+  .attr("id")
+  .replace("list-", "");
+  console.log(status)
+  //get the task's position in the list of other li elements
+  var index = $(this)
+  .closest(".list-group-item")
+  .index();
+
+  //use this captured data to update the appropriate arrays in the task object
+  tasks[status][index].text = text;
+  saveTasks();
+
+  //recreate p element
+  var taskP = $("<p>")
+    .addClass("m-1")
+    .text(text);
+
+  //replace textarea with a p element
+  $(this).repalceWith(taskP);
+})
+
 
 
 
